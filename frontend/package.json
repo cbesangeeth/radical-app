@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://cbesangeeth.github.io/radical-app/frontend",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

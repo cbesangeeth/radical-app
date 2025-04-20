@@ -5,9 +5,11 @@ import ExpenseForm from './pages/ExpenseForm';
 import Summary from './pages/Summary';
 import Navbar from './components/Navbar';
 
+const basename =  '/radical-app';
+
 function App() {
   return (
-    <Router>
+    <Router basename={basename}>
       <Container
         sx={{
           minHeight: '100vh',
