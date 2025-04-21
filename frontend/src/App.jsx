@@ -5,7 +5,7 @@ import ExpenseForm from './pages/ExpenseForm';
 import Summary from './pages/Summary';
 import Navbar from './components/Navbar';
 
-const basename =  '/radical-app';
+const basename =  '';
 
 function App() {
   return (

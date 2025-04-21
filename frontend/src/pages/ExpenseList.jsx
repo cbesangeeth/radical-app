@@ -29,7 +29,6 @@ function ExpenseList() {
 
   // Memoized fetch function
   const fetchExpenses = useCallback(async () => {
-    console.log("Fetching expenses with filters:", filters); // Debug log
     try {
       const data = await getExpenses(filters);
       setExpenses(data);

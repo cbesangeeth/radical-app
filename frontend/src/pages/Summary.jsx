@@ -20,11 +20,9 @@ function Summary() {
 
   // Memoized fetch function
   const fetchSummary = useCallback(async () => {
-    console.log('Fetching summary with filters:', filters); // Debug log
     try {
       setLoading(true);
       const data = await getSummary(filters.userId, filters.period, filters.startDate, filters.endDate);
-      console.log('API response:', data); // Debug log
       // Ensure data is an array; fallback to empty array if null/undefined
       setSummaries(Array.isArray(data) ? data : []);
       setError('');
@@ -59,7 +57,6 @@ function Summary() {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Updating filter ${name} to ${value}`); // Debug log
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
