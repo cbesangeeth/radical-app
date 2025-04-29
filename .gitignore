@@ -2,3 +2,4 @@
 /frontend/dist/
 /backend/.env
 /frontend/.env
+.vscode

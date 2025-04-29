@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
-import { addExpense, updateExpense, getExpenses } from '../utils/api';
+import { addExpense, updateExpense, getExpenses } from '../utils/api/expenseApi';
 
 function ExpenseForm() {
   const { id } = useParams(); // For editing
@@ -10,7 +10,7 @@ function ExpenseForm() {
     userId: 1, // Hardcoded for 1-2 users; replace with user context if needed
     amount: '', // Store as string for form input
     category: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0],
     description: '',
   });
   const [error, setError] = useState('');
@@ -71,7 +71,7 @@ function ExpenseForm() {
       } else {
         await addExpense(payload);
       }
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to save expense');
     } finally {

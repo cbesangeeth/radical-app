@@ -1,20 +1,61 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Box, Typography, TextField, MenuItem, Button, CircularProgress } from '@mui/material';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { getSummary } from '../utils/api';
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Box,
+  Typography,
+  TextField,
+  MenuItem,
+  Button,
+  CircularProgress,
+} from "@mui/material";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { getSummary } from "../utils/api/expenseApi";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function Summary() {
   const [summaries, setSummaries] = useState([]); // Initialize as empty array
+  const now = new Date();
+  // Get current year and month
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed: April is 3
+
+  // Start of month: 1st day
+  const startDate = new Date(year, month, 1);
+
+  // End of month: 0th day of next month = last day of current month
+  const endDate = new Date(year, month + 1, 0);
+
+  // Format to YYYY-MM-DD using local date parts
+  const formatDate = (date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   const [filters, setFilters] = useState({
     userId: 1, // Hardcoded for now
-    period: 'month',
-    startDate: '2025-01-01',
-    endDate: '2025-12-31',
+    period: "month",
+    startDate: formatDate(startDate),
+    endDate: formatDate(endDate),
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const debounceTimeout = useRef(null); // For debouncing API calls
 
@@ -22,13 +63,18 @@ function Summary() {
   const fetchSummary = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await getSummary(filters.userId, filters.period, filters.startDate, filters.endDate);
+      const data = await getSummary(
+        filters.userId,
+        filters.period,
+        filters.startDate,
+        filters.endDate
+      );
       // Ensure data is an array; fallback to empty array if null/undefined
       setSummaries(Array.isArray(data) ? data : []);
-      setError('');
+      setError("");
     } catch (err) {
-      console.error('Fetch error:', err); // Debug log
-      setError(err.response?.data?.error || 'Failed to fetch summary');
+      console.error("Fetch error:", err); // Debug log
+      setError(err.response?.data?.error || "Failed to fetch summary");
       setSummaries([]); // Reset to empty array on error
     } finally {
       setLoading(false);
@@ -57,7 +103,56 @@ function Summary() {
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "period") {
+      const now = new Date();
+      let startDate, endDate;
+
+      switch (value) {
+        case "day":
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1); // Start of month
+          endDate = now; // Today
+          break;
+
+        case "month":
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          break;
+
+        case "quarter": {
+          const currentMonth = now.getMonth();
+          const quarterStartMonth = Math.floor(currentMonth / 3) * 3;
+          startDate = new Date(now.getFullYear(), quarterStartMonth, 1);
+          endDate = new Date(now.getFullYear(), quarterStartMonth + 3, 0);
+          break;
+        }
+
+        case "year":
+          startDate = new Date(now.getFullYear(), 0, 1);
+          endDate = new Date(now.getFullYear(), 12, 0); // Dec 31
+          break;
+
+        default:
+          startDate = endDate = now;
+      }
+
+      const formatDate = (date) => {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
+      setFilters((prev) => ({
+        ...prev,
+        period: value,
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
+      }));
+    } else {
+      // For other filter fields
+      setFilters((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   // Only render chart if summaries is a non-empty array
@@ -65,10 +160,10 @@ function Summary() {
     labels: summaries.length > 0 ? summaries.map((s) => s.period) : [],
     datasets: [
       {
-        label: 'Total Expenses',
+        label: "Total Expenses",
         data: summaries.length > 0 ? summaries.map((s) => s.total) : [],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
     ],
@@ -85,7 +180,7 @@ function Summary() {
         </Typography>
       )}
       {loading && <CircularProgress sx={{ mb: 2 }} />}
-      <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
+      <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
         <TextField
           select
           label="Period"
@@ -122,9 +217,15 @@ function Summary() {
           Refresh
         </Button>
       </Box>
-      <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+      <Box sx={{ maxWidth: 800, mx: "auto" }}>
         {summaries.length > 0 ? (
-          <Bar data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
+          <Bar
+            data={chartData}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: "top" } },
+            }}
+          />
         ) : (
           <Typography>No data available for the selected filters.</Typography>
         )}

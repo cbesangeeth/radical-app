@@ -13,7 +13,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { getExpenses, deleteExpense } from "../utils/api";
+import { getExpenses, deleteExpense } from "../utils/api/expenseApi";
 
 function ExpenseList() {
   const navigate = useNavigate();

@@ -1,31 +1,34 @@
 import axios from 'axios';
+import { addAuthInterceptor } from '../axiosAuthInterceptor';
 
-const api = axios.create({
+const expenseApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
+addAuthInterceptor(expenseApi);
+
 export const addExpense = async (expense) => {
-  const response = await api.post('/expenses', expense);
+  const response = await expenseApi.post('/expenses', expense);
   return response.data;
 };
 
 export const getExpenses = async (filters) => {
-  const response = await api.get('/expenses', { params: filters });
+  const response = await expenseApi.get('/expenses', { params: filters });
   return response.data.expenses;
 };
 
 export const updateExpense = async (id, expense) => {
-  const response = await api.put(`/expenses/${id}`, expense);
+  const response = await expenseApi.put(`/expenses/${id}`, expense);
   return response.data;
 };
 
 export const deleteExpense = async (id) => {
-  const response = await api.delete(`/expenses/${id}`);
+  const response = await expenseApi.delete(`/expenses/${id}`);
   return response.data;
 };
 
 export const getSummary = async (userId, period, startDate, endDate) => {
-  const response = await api.get('/expenses/summary', {
+  const response = await expenseApi.get('/expenses/summary', {
     params: { userId, period, startDate, endDate },
   });
   return response.data.summaries;

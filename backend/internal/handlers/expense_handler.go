@@ -260,3 +260,4 @@ func (h *ExpenseHandler) HealthCheck(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "Database connected"})
 }
+
