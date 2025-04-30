@@ -1,12 +1,13 @@
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { setSessionStorage } from '../utils/sessionStorageUtil';
+import { performLogout } from '../utils/auth';
 
 function Navbar() {
   const navigate = useNavigate();
+  
   function handleLogout(){
-    setSessionStorage("isAuthenticated", false)
-    setSessionStorage("token", "")
+    performLogout();
     navigate('/')
   }
 
