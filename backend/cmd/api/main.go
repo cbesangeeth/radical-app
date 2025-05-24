@@ -46,7 +46,7 @@ func main() {
 
 	// add endpoints
 	r.POST("/oauth/google", userHandler.GoogleOauth)
-	
+
 	// Protected routes
 	authGroup := r.Group("")
 	authGroup.Use(middleware.AuthMiddleware())
@@ -63,5 +63,9 @@ func main() {
 		authGroup.GET("/users", userHandler.ListUsers)
 	}
 
-	r.Run(":" + os.Getenv("SERVER_PORT"))
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "8080" // default port
+	}
+	r.Run(":" + port)
 }
