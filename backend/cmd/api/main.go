@@ -63,7 +63,7 @@ func main() {
 		authGroup.GET("/users", userHandler.ListUsers)
 	}
 
-	port := os.Getenv("SERVER_PORT")
+	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // default port
 	}
