@@ -7,21 +7,22 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Button,
   Box,
   Typography,
   IconButton,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import { getExpenses, deleteExpense } from "../utils/api/expenseApi";
+import { getDateRangeForPeriod } from "../utils/dateUtils";
 
 function ExpenseList() {
   const navigate = useNavigate();
   const [expenses, setExpenses] = useState([]);
+  const { startDate, endDate } = getDateRangeForPeriod("month");
   const [filters, setFilters] = useState({
     userId: 1, // Hardcoded for now
-    startDate: "",
-    endDate: "",
+    startDate: startDate,
+    endDate: endDate,
     category: "",
   });
   const [error, setError] = useState("");
@@ -31,7 +32,7 @@ function ExpenseList() {
   const fetchExpenses = useCallback(async () => {
     try {
       const data = await getExpenses(filters);
-      setExpenses(data);
+      setExpenses(data || []);
       setError("");
     } catch (err) {
       setError("Failed to fetch expenses");
@@ -105,7 +106,7 @@ function ExpenseList() {
       </Box>
       <Table>
         <TableHead>
-          <TableRow>
+          <TableRow style={{ backgroundColor: "#f5f5f5" }}>
             <TableCell>Amount</TableCell>
             <TableCell>Category</TableCell>
             <TableCell>Date</TableCell>

@@ -18,6 +18,7 @@ import {
   Legend,
 } from "chart.js";
 import { getSummary } from "../utils/api/expenseApi";
+import { getDateRangeForPeriod } from "../utils/dateUtils";
 
 ChartJS.register(
   CategoryScale,
@@ -30,31 +31,15 @@ ChartJS.register(
 
 function Summary() {
   const [summaries, setSummaries] = useState([]); // Initialize as empty array
-  const now = new Date();
-  // Get current year and month
-  const year = now.getFullYear();
-  const month = now.getMonth(); // 0-indexed: April is 3
-
-  // Start of month: 1st day
-  const startDate = new Date(year, month, 1);
-
-  // End of month: 0th day of next month = last day of current month
-  const endDate = new Date(year, month + 1, 0);
-
-  // Format to YYYY-MM-DD using local date parts
-  const formatDate = (date) => {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
-    const dd = String(date.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-  };
+  const { startDate, endDate } = getDateRangeForPeriod("month");
 
   const [filters, setFilters] = useState({
     userId: 1, // Hardcoded for now
     period: "month",
-    startDate: formatDate(startDate),
-    endDate: formatDate(endDate),
+    startDate: startDate,
+    endDate: endDate,
   });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const debounceTimeout = useRef(null); // For debouncing API calls
@@ -105,49 +90,14 @@ function Summary() {
     const { name, value } = e.target;
 
     if (name === "period") {
-      const now = new Date();
-      let startDate, endDate;
 
-      switch (value) {
-        case "day":
-          startDate = new Date(now.getFullYear(), now.getMonth(), 1); // Start of month
-          endDate = now; // Today
-          break;
-
-        case "month":
-          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-          break;
-
-        case "quarter": {
-          const currentMonth = now.getMonth();
-          const quarterStartMonth = Math.floor(currentMonth / 3) * 3;
-          startDate = new Date(now.getFullYear(), quarterStartMonth, 1);
-          endDate = new Date(now.getFullYear(), quarterStartMonth + 3, 0);
-          break;
-        }
-
-        case "year":
-          startDate = new Date(now.getFullYear(), 0, 1);
-          endDate = new Date(now.getFullYear(), 12, 0); // Dec 31
-          break;
-
-        default:
-          startDate = endDate = now;
-      }
-
-      const formatDate = (date) => {
-        const yyyy = date.getFullYear();
-        const mm = String(date.getMonth() + 1).padStart(2, "0");
-        const dd = String(date.getDate()).padStart(2, "0");
-        return `${yyyy}-${mm}-${dd}`;
-      };
-
+      const {startDate, endDate} = getDateRangeForPeriod(value);
+     
       setFilters((prev) => ({
         ...prev,
         period: value,
-        startDate: formatDate(startDate),
-        endDate: formatDate(endDate),
+        startDate: startDate,
+        endDate: endDate,
       }));
     } else {
       // For other filter fields
