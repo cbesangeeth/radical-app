@@ -12,6 +12,7 @@ import LandingPage from "./pages/LandingPage";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoutes from "./ProtectedRoutes";
+import BulkExpenseForm from "./pages/BulkExpenseForm";
 
 const basename = "";
 
@@ -39,6 +40,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/list" element={<ExpenseList />} />
             <Route path="/add" element={<ExpenseForm />} />
+            <Route path="/bulk-add" element={<BulkExpenseForm />} />
             <Route path="/edit/:id" element={<ExpenseForm />} />
             <Route path="/summary" element={<Summary />} />
           </Route>

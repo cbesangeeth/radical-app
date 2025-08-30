@@ -25,9 +25,12 @@ function Navbar() {
         <Button color="inherit" component={Link} to="/add">
           Add Expense
         </Button>
+         <Button color="inherit" component={Link} to="/bulk-add">
+          Bulk Add
+        </Button>
         <Button color="inherit" component={Link} to="/summary">
           Summary
-        </Button>
+        </Button> 
         <Button color="inherit" onClick={handleLogout}>
           Logout
         </Button>
