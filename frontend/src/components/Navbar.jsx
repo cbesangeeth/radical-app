@@ -22,6 +22,9 @@ function Navbar() {
         <Button color="inherit" component={Link} to="/list">
           Expenses
         </Button>
+        <Button color="inherit" component={Link} to="/list-enhanced">
+          Enhanced Expenses
+        </Button>
         <Button color="inherit" component={Link} to="/add">
           Add Expense
         </Button>
