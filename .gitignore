@@ -3,3 +3,7 @@
 /backend/.env
 /frontend/.env
 .vscode
+
+# backend build files
+*.zip
+bootstrap
