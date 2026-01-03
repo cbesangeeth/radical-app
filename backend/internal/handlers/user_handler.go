@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"time"
 
@@ -48,15 +49,40 @@ func (h *UserHandler) GoogleOauth(c *gin.Context) {
 		return
 	}
 
+	env := os.Getenv("VALID_USER_EMAIL_IDS")
+	allowedEmails := map[string]struct{}{}
+	if env != "" {
+		for _, email := range strings.Split(env, ",") {
+			email = strings.ToLower(strings.TrimSpace(email))
+			if email != "" {
+				allowedEmails[email] = struct{}{}
+			}
+		}
+	}
+
 	payload, err := idtoken.Validate(context.Background(), req.Credential, "965708989841-c3ghgrpu83jg336emaqs8ouooovr4a8d.apps.googleusercontent.com")
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid ID token"})
 		return
 	}
 
-	email := payload.Claims["email"].(string)
+	emailRaw, ok := payload.Claims["email"].(string)
 	name := payload.Claims["name"].(string)
 	sub := payload.Claims["sub"].(string) // This is Google user ID
+
+	if !ok || emailRaw == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Email not found in token"})
+		return
+	}
+	
+	email := strings.ToLower(emailRaw)
+	
+	if _, ok := allowedEmails[email]; !ok {
+		c.JSON(http.StatusForbidden, gin.H{
+			"error": "Email is not authorized to access this application",
+		})
+		return
+	}
 
 	user := model.UserCreateRequest{
 		ID:    sub,

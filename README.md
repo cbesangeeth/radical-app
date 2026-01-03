@@ -9,3 +9,10 @@ Golang
 
 ## Database
 Postgres
+
+## Deployment Details
+Frontend : Vercel
+
+Backend: AWS Lambda
+
+Database: [superbase](https://supabase.com/)
