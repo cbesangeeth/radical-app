@@ -2,6 +2,7 @@
 /frontend/dist/
 /backend/.env
 /frontend/.env
+/audio-service/lib/
 .vscode
 
 # backend build files
